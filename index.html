@@ -1,0 +1,40 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/login.css" type="text/css" />
+    <link rel="stylesheet" href="styles/style.css" type="text/css" />
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="login-main-content">
+        <div class="form-container">
+            <div class="logo-container">
+                <span id="logo">Todoist</span>
+                <span id="sub-title">Power to do more!!!</span>
+            </div>
+            <form id="login-form" action="javascript:void(0);"
+                onsubmit="login(document.getElementById('username').value,document.getElementById('password').value)">
+                <div class="form-content">
+                    <div class="username-container">
+                        <input type="text" class="username" placeholder="Enter username..." id="username" />
+                    </div>
+                    <div class="password-container">
+                        <input type="password" class="password" placeholder="Enter password..." id="password" />
+                    </div>
+                    <div class="btns-div">
+                        <button class="submit">Login</button>
+                        <a href="register.html">Register</a>
+                    </div>
+                </div>
+            </form>
+            <script type="text/javascript" src="credentials.json"></script>
+            <script type="text/javascript" src="scripts/login.js"></script>
+        </div>
+    </div>
+</body>
+
+</html>

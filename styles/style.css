@@ -1,0 +1,322 @@
+body {
+    margin: 0px;
+    background-color: #f2f2f2;
+}
+
+.header {
+    height: 70px;
+    width: 100%;
+    background-color: #2875f7;
+    box-shadow: 0px 4px 5px #00000070;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1;
+}
+.header > .logo-nav-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.header > .logo-nav-container > .sidenav-btn > span {
+    color: white;
+    font-size: 30px;
+    padding: 5px;
+    margin: 10px;
+    cursor: pointer;
+}
+.header > .logo-nav-container > .sidenav-btn > span > i {
+    transition: all 0.3s ease-in-out;
+}
+.header > .logo-nav-container > .sidenav-btn > span > i:hover {
+    transform: scale(1.1);
+}
+.header > .logo-nav-container > .logo-container > span {
+    color: white;
+    font-family: "Indie Flower", cursive;
+    font-size: 48px;
+    padding: 5px;
+    margin: 10px;
+    text-shadow: 2px 2px 4px #00000070;
+}
+.header > #profile-container > .username-span {
+    color: #ffffff;
+    font-family: "Open Sans", sans-serif;
+    /* font-weight: bold; */
+    font-size: large;
+    margin: 10px;
+    padding: 10px;
+}
+.root {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: calc(100% - 70px);
+}
+.root > .sidenav {
+    transition: all 0.3s ease-in-out;
+    width: 0px;
+    max-width: 0px;
+    height: 100%;
+    box-shadow: 4px 0px 5px #00000070;
+    background-color: #f2f2f2;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+.root > .sidenav.open {
+    width: 250px;
+    max-width: 250px;
+}
+.sidenav .icon {
+    width: 24px;
+    height: 24px;
+    padding: 5px;
+    margin: 10px;
+    cursor: pointer;
+}
+.sidenav .list-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 10px auto;
+}
+.sidenav .list-div:hover {
+    background-color: #00000035;
+    box-shadow: 2px 2px 4px #00000070;
+    cursor: pointer;
+}
+.sidenav .list-div > span {
+    font-family: "Open Sans", sans-serif;
+    font-weight: bold;
+    font-size: large;
+}
+.main-content {
+    transition: all 0.3s ease-in-out;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    overflow: hidden;
+}
+.main-content.open {
+    width: calc(100% - 250px);
+}
+#display-content {
+    width: -webkit-fill-available;
+    height: 100%;
+    padding: 10px;
+}
+#display-content > h3 {
+    font-family: "Architects Daughter", cursive;
+}
+#display-content .task-content.daily > .task-div.daily {
+    border-bottom: 1px solid #80808063;
+    padding: 10px;
+    margin: 5px;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+#display-content .task-content.daily > .task-div.daily:hover {
+    box-shadow: 4px 4px 4px #00000070;
+    background-color: white;
+    border-radius: 5px;
+}
+#display-content .task-content.daily > .task-div.daily > .task-span.daily {
+    font-family: "Architects Daughter", cursive;
+    font-size: 18px;
+}
+#display-content .task-content.daily > .task-div.daily > .task-delete {
+    width: 24px;
+    height: 24px;
+    padding: 10px;
+    border: 2px solid transparent;
+}
+#display-content .task-content.daily > .task-div.daily > .task-delete:hover {
+    box-shadow: 4px 4px 5px #00000070;
+    border-radius: 5px;
+    border: 2px solid #2875f7;
+}
+.backdrop {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 100%;
+    width: 100%;
+    transition: all 0.5s ease-in-out;
+    display: none;
+}
+.backdrop.open {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: #00000090;
+    font-family: "Architects Daughter", cursive;
+}
+.backdrop > .backdrop-content-container {
+    /* width: 30%; */
+    /* height: 50%; */
+    background-color: #f2f2f2;
+    transition: all 0.5s ease-in-out;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+.backdrop button {
+    background-color: transparent;
+    font-family: "Architects Daughter", cursive;
+    outline: none;
+    border: 2px solid #2875f7;
+    font-size: 14px;
+    padding: 10px;
+    border-radius: 5px;
+    color: black;
+    transition: all 0.3s ease-in-out;
+}
+.backdrop button:hover {
+    background-color: #2875f7;
+    font-weight: bold;
+    color: white;
+}
+.backdrop .inputs-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+}
+.backdrop .inputs-div textarea {
+    outline: none;
+    background-color: #f2f2f2;
+    border: 2px solid grey;
+    border-radius: 5px;
+    font-family: "Architects Daughter", cursive;
+}
+.table-container {
+    width: fit-content;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Open Sans", sans-serif;
+    margin-right: 10px;
+    user-select: none;
+}
+.table-container > h3 {
+    font-family: "Architects Daughter", cursive;
+}
+.days {
+    border-radius: 5px;
+    padding: 4px;
+    margin: 2px;
+    text-align: center;
+    font-family: "Architects Daughter", cursive;
+}
+.date {
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    border-radius: 5px;
+    padding: 4px;
+    border: 1px solid transparent;
+    width: 26px;
+    height: 30px;
+}
+.date.selected {
+    border: 2px solid #2875f7 !important;
+    background-color: #2875f790;
+    color: white;
+    font-weight: bold;
+    box-shadow: 2px 2px 4px #00000070;
+}
+.date:hover {
+    background-color: #2875f790;
+    color: white;
+    cursor: pointer;
+    box-shadow: 2px 2px 4px #00000070;
+    border: 0px;
+}
+.today {
+    background-color: #2875f7;
+    color: #f2f2f2;
+    font-weight: bold;
+}
+.navigation-btns-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation-btns-container > input {
+    background-size: contain;
+    height: 35px;
+    padding: 10px 0px;
+    width: 35px;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    background-color: transparent;
+    transition: all 0.2s ease-in-out;
+    border: 0px;
+    outline: none;
+    margin: 10px;
+    border-radius: 5px;
+}
+.navigation-btns-container > input:hover {
+    transform: scale(1.1);
+    box-shadow: 2px 2px 4px black;
+}
+
+.navigation-btns-container > input#today {
+    font-family: "Architects Daughter", cursive;
+    width: fit-content;
+    font-size: 15px;
+    padding: 7px 10px 10px 10px;
+}
+.navigation-btns-container > input#previous {
+    background-image: url("../assets/icons/chevron-left-solid.svg");
+    border-top-left-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.navigation-btns-container > input#next {
+    background-image: url("../assets/icons/chevron-right-solid.svg");
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 50%;
+    border-top-right-radius: 50%;
+}
+.form-inline .form-control {
+    background-color: #f2f2f2;
+    outline: none;
+    border: 0px;
+    font-size: 16px;
+    font-family: "Open Sans", sans-serif;
+}
+.form-inline .form-control:hover {
+    box-shadow: 2px 2px 4px #00000070;
+}
+
+.form-inline .form-control::-webkit-scrollbar {
+    width: 10px;
+}
+
+.form-inline .form-control::-webkit-scrollbar-track {
+    background-color: #f2f2f2;
+}
+.form-inline .form-control::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 5px;
+}
