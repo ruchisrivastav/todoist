@@ -1,3 +1,8 @@
+window.onload = (function () {
+    accounts = localStorage.getItem("accounts")
+    if (accounts === null || accounts === undefined)
+        localStorage.setItem("accounts", JSON.stringify([]))
+})
 function login(username, password) {
     var form = document.getElementById("login-form");
     var credentials = JSON.parse(localStorage.getItem("accounts"))
@@ -105,18 +110,19 @@ function registerUser() {
                         </button>
                     </div>
                     `
+
+            } else {
+                console.log("indise else")
+                var newUser = {
+                    username: btoa(username),
+                    password: btoa(password)
+                }
+                accounts.push(newUser);
+                localStorage.setItem("accounts", JSON.stringify(accounts))
+                window.location.pathname = "/"
             }
         }
-    } else {
-        var newUser = {
-            username: btoa(username),
-            password: btoa(password)
-        }
-        accounts.push(newUser);
-        localStorage.setItem("accounts", JSON.stringify(accounts))
-
     }
-
 }
 
 function closeAlert() {
