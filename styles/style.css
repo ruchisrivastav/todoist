@@ -90,8 +90,8 @@ body {
     max-width: 250px;
 }
 .sidenav .selector.open {
-    width: 5px;
-    min-width: 5px;
+    width: 4px;
+    min-width: 4px;
     display: block;
     min-height: 54px;
     background-color: #2875f7;
