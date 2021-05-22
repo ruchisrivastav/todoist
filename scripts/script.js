@@ -5,11 +5,18 @@ function toggleSidenav() {
     sidenavDiv.classList.toggle("open")
     mainContent.classList.toggle("open")
 }
+
+function logout() {
+    sessionStorage.clear();
+    window.location.pathname = "/";
+}
+
 window.onload = (function () {
     userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
     container = document.getElementById("profile-container");
     container.innerHTML += `
     <span class="username-span">Welcome ${atob(userDetails.username)}!</span>
+    <span class="logout-span" onclick="logout()">Logout</span>
     `
 })
 var view = "daily";
@@ -25,7 +32,6 @@ months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", 
 
 monthAndYear = document.getElementById("monthAndYear");
 showCalendar(currentMonth, currentYear);
-
 
 function next() {
     currentYear = (currentMonth === 11) ? currentYear + 1 : currentYear;
@@ -122,7 +128,14 @@ function showCalendar(month, year) {
 function daysInMonth(iMonth, iYear) {
     return 32 - new Date(iYear, iMonth, 32).getDate();
 }
-function setView(value) {
+function setView(event, value) {
+
+    var elements = document.getElementsByClassName("selector open");
+    for (var i = 0; i < elements.length; i++) {
+        elements.item(i).classList.remove("open")
+    }
+    //setting the selector
+    event.currentTarget.children[0].classList.add("open")
     this.view = value
     renderData();
 }
@@ -141,7 +154,6 @@ function getData(date) {
     localStorage.setItem("taskData", JSON.stringify(asd))
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
     taskData = JSON.parse(localStorage.getItem("taskData"));
-    console.log(taskData)
     username = atob(userCreds.username);
     var taskData = taskData.filter((item) => item.date === date)?.[0];
     return (taskData?.tasks)

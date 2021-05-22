@@ -30,15 +30,18 @@
         </div>
         <div class="sidenav">
             <div>
-                <div class="list-div" onclick="setView('daily')">
+                <div class="list-div" onclick="setView(event, 'daily')">
+                    <div class="selector open"></div>
                     <img class="icon" src="assets/icons/calendar-day-solid.svg" />
                     <span>Daily</span>
                 </div>
-                <div class="list-div" onclick="setView('weekly')">
+                <div class="list-div" onclick="setView(event, 'weekly')">
+                    <div class="selector"></div>
                     <img class="icon" src="assets/icons/calendar-week-solid.svg" />
                     <span>Weekly</span>
                 </div>
-                <div class="list-div" onclick="setView('monthly')">
+                <div class="list-div" onclick="setView(event, 'monthly')">
+                    <div class="selector"></div>
                     <img class="icon" src="assets/icons/calendar-alt-solid.svg" />
                     <span>Monthly</span>
                 </div>
