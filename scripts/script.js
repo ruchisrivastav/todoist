@@ -129,12 +129,16 @@ function daysInMonth(iMonth, iYear) {
     return 32 - new Date(iYear, iMonth, 32).getDate();
 }
 function setView(event, value) {
-
+    var rootElem = document.getElementsByClassName("list-div open");
     var elements = document.getElementsByClassName("selector open");
+    for (var i = 0; i < rootElem.length; i++) {
+        rootElem.item(i).classList.remove("open")
+    }
     for (var i = 0; i < elements.length; i++) {
         elements.item(i).classList.remove("open")
     }
     //setting the selector
+    event.currentTarget.classList.add("open")
     event.currentTarget.children[0].classList.add("open")
     this.view = value
     renderData();
@@ -147,15 +151,29 @@ function getWeekNumber(date) {
     return weekOfMonth;
 }
 function getData(date) {
-    var todaysDate = new Date().toDateString();
-    asd = [
-        { date: todaysDate, tasks: ["Clean house", "buy eggs"] }
-    ]
-    localStorage.setItem("taskData", JSON.stringify(asd))
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
-    taskData = JSON.parse(localStorage.getItem("taskData"));
-    username = atob(userCreds.username);
-    var taskData = taskData.filter((item) => item.date === date)?.[0];
+
+
+    // var todaysDate = new Date().toDateString();
+
+    // asd = [
+    //     {
+    //         username: userCreds.username,
+    //         taskData: [{ date: todaysDate, tasks: ["Clean house", "buy eggs"] }]
+    //     }
+    // ]
+    // localStorage.setItem("allTaskData", JSON.stringify(asd))
+
+
+    AllTaskData = JSON.parse(localStorage.getItem("allTaskData"));
+    var currentUserAllTaskData = {}
+    for (let i = 0; i < AllTaskData.length; i++) {
+        if (atob(AllTaskData[i].username) === atob(userCreds.username)) {
+            currentUserAllTaskData = AllTaskData[i].taskData;
+            break;
+        }
+    }
+    taskData = currentUserAllTaskData.filter((item) => item.date === date)?.[0];
     return (taskData?.tasks)
 }
 function setData() {
@@ -163,17 +181,21 @@ function setData() {
 }
 function toggleBackdrop() {
     backdrop = document.getElementById("backdrop");
-    backdrop.classList.toggle("open");
+    if (backdrop.classList.contains("open"))
+        backdrop.classList.toggle("open");
 }
 
 function editTask(prevTaskName, newTask, prevDate, newDate) {
     newDate = new Date(newDate).toDateString();
     console.log(prevTaskName, newTask, prevDate, newDate);
-    if (prevTaskName !== newTask && prevDate !== newDate) {
+
+    if (prevTaskName === "") {
+        // create new task in the given date
+    } else if (prevTaskName !== newTask && prevDate !== newDate) {
         // delete task and add new Task in new Date
         console.log(prevTaskName === newTask && prevDate === newDate);
     } else if (prevTaskName !== newTask && prevDate === newDate) {
-        //just edit task 
+        // just edit task 
     } else if (prevTaskName === newTask && prevDate !== newDate) {
         // edit only date i.e delete from here, add to another Date
     }
@@ -185,27 +207,64 @@ function deleteTask(task, date) {
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
     username = atob(userCreds.username);
     // localStorage.setItem("taskData", JSON.stringify(dat.data))
-    taskData = JSON.parse(localStorage.getItem("taskData"));
-    console.log(taskData.filter(item => item.date === date)[0].indexOf(task));
-    console.log(taskData[date]?.indexOf(task));
+    AllTaskData = JSON.parse(localStorage.getItem("allTaskData"));
+    AllTaskData.forEach((userData, index) => {
+        if (atob(userData.username) === username) {
+            // update here 
+            console.log(userData)
+            userAllTaskData = userData.taskData
+            currentTaskData = [];
+            userAllTaskData.forEach(item => {
+                if (item.date === date) {
+                    item.tasks.splice(item.tasks.indexOf(task), 1)
+                }
+            });
+        }
+    })
+    console.log(AllTaskData)
+    localStorage.setItem("allTaskData", JSON.stringify(AllTaskData));
+
+    toggleBackdrop();
+    // for (let index = 0; index < AllTaskData.length; index++) {
+    //     if (atob(AllTaskData[index].username) === username) {
+    //         // update here 
+    //         userAllTaskData = AllTaskData[index].taskData
+    //         currentTaskData = [];
+    //         userAllTaskData.forEach(item => {
+    //             if (item.date === date) {
+    //                 item.tasks.splice(item.tasks.indexOf(task), 1)
+    //             }
+    //         });
+    //         // currentTaskData.tasks.splice(currentTaskData.tasks.indexOf(task), 1)
+    //         console.log(userAllTaskData)
+    //         break;
+    //     }
+    // }
     renderData();
 }
 
-function renderEditTask(task, date) {
+function renderEditTask(task = "", date = new Date().toDateString()) {
     console.log(task, date)
     toggleBackdrop()
     backdropContentContainer = document.getElementsByClassName("backdrop-content-container")[0];
     backdropContentContainer.innerHTML = `
-    <h3>Edit Task</h3>
+  
+    <h3>${task === "" ? "Add New" : "Edit"} Task</h3>
     <div class="inputs-div">
-        <textarea id="edit-task-textarea" rows="4" cols="50">${task}</textarea>
-        <input id="edit-task-date" type="date" value="${new Date(date).toLocaleDateString('en-CA')}"/>
+        <textarea id="edit-task-textarea" rows="4" cols="50" required>${task}</textarea>
+        <div className="date-container">
+            <label>Date: </label>
+            <input id="edit-task-date" type="date" min="${new Date().toLocaleDateString('en-CA')}" value="${new Date(date).toLocaleDateString('en-CA')}"/>
+        </div>
     </div>
     <div class="btns-div">
-        <button onClick="editTask('${task}',document.getElementById('edit-task-textarea').value, '${date}', document.getElementById('edit-task-date').value)">Submit</button>
+        <button class="submit" onClick="editTask('${task}', document.getElementById('edit-task-textarea').value, '${date}', document.getElementById('edit-task-date').value)" >Submit</button>
         <button onclick="toggleBackdrop()">Cancel</button>
+        <button class="delete" onClick="deleteTask('${task}', '${date}')" ${task === "" ? "disabled" : ""}>Delete Task</button>
     </div>
     `
+    document.getElementById("edit-task-textarea").focus();
+
 }
 function renderData() {
     contentContainer = document.getElementById("display-content");
@@ -214,11 +273,12 @@ function renderData() {
             taskData = getData(selectedDate);
             taskList = []
             taskData?.forEach(task => {
-                taskDiv = `<div class="task-div daily" onclick="renderEditTask('${task}', selectedDate)" >
-                <span class="task-span daily">${task}</span>
-                <span onclick="event.stopPropagation(); deleteTask('${task}', selectedDate)" class="task-delete">
-                    <img src="assets/icons/trash-solid.svg" />
-                </span>
+                taskDiv = `
+                <div class="task-div daily" onclick="event.stopPropagation(); renderEditTask('${task}', '${selectedDate}')" >
+                    <span class="task-span daily">${task}</span>
+                    <span onclick="event.stopPropagation(); deleteTask('${task}', '${selectedDate}')" class="task-delete">
+                        <img src="assets/icons/trash-solid.svg" />
+                    </span>
                 </div>`
                 taskList.push(taskDiv);
             });
@@ -228,7 +288,6 @@ function renderData() {
                 ${taskList.join("")}
             </div>
             `
-            console.log(getData(selectedDate));
             break;
         case "weekly":
             week = document.getElementById(`row-${getWeekNumber(selectedDate)}`);
@@ -236,15 +295,48 @@ function renderData() {
             datesTaskData = [];
             dates = [];
             currentSelectedDate = new Date(selectedDate);
-            for (index = 0; index < week.children.length; index++) {
-                weekDate = new Date(currentSelectedDate.getFullYear(), currentSelectedDate.getMonth(), Number(week.children[index].innerText));
-                dates.push(weekDate.toDateString());
-                tasks = getData(weekDate.toDateString());
-                datesTaskData.push(tasks);
+            // counter for date from another month
+            newDateCount = 1;
+            for (index = 0; index < 7; index++) {
+                if (week.children[index] !== undefined) {
+                    weekDate = new Date(currentSelectedDate.getFullYear(), currentSelectedDate.getMonth(), Number(week.children[index]?.innerText));
+                    dates.push(weekDate.toDateString());
+                    tasks = getData(weekDate.toDateString());
+                    datesTaskData.push(tasks);
+                } else {
+                    weekDate = new Date(currentSelectedDate.getFullYear(), currentSelectedDate.getMonth() + 1, newDateCount);
+                    dates.push(weekDate.toDateString());
+                    tasks = getData(weekDate.toDateString());
+                    datesTaskData.push(tasks);
+                    newDateCount++;
+                }
             }
-            contentContainer.innerHTML = `Weekly board`
-            console.log(datesTaskData)
-            console.log(dates)
+            var weekDivList = []
+            dates.forEach((date, index) => {
+                var week = '';
+                var dayList = []
+
+                datesTaskData[index] !== undefined && datesTaskData[index].forEach(task => {
+                    var day = `
+                    <div class="task-div weekly" onclick="renderEditTask('${task}', '${selectedDate}' )" >
+                        <span class="task-span weekly">${task}</span>
+                    </div>`
+                    dayList.push(day)
+                })
+
+                week = `
+                <div class="week-div" id=${index}>
+                    <h4 class="week-date-span" id=${date}>${date}</h4>
+                    ${dayList.join("")}
+                </div>
+                `
+                weekDivList.push(week)
+            })
+            contentContainer.innerHTML = `
+            <div class="task-content weekly">
+                ${weekDivList.join("")}
+            </div>
+            `
             break;
         case "monthly":
             contentContainer.innerHTML = `Monthly board`
