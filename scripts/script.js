@@ -12,16 +12,6 @@ function logout() {
 }
 
 window.onload = (function () {
-    userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
-    allTaskData = JSON.parse(localStorage.getItem("allTaskData"));
-
-    if (allTaskData === null) {
-        allTaskData = [];
-        blankData = { username: userDetails.username, taskData: [] }
-        allTaskData.push(blankData);
-        localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
-    }
-
     container = document.getElementById("profile-container");
     container.innerHTML += `
     <span class="username-span">Welcome ${atob(userDetails.username)}!</span>
@@ -160,18 +150,6 @@ function getWeekNumber(date) {
 }
 function getData(date) {
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
-
-
-    // var todaysDate = new Date().toDateString();
-
-    // asd = [
-    //     {
-    //         username: userCreds.username,
-    //         taskData: [{ date: todaysDate, tasks: ["Clean house", "buy eggs"] }]
-    //     }
-    // ]
-    // localStorage.setItem("allTaskData", JSON.stringify(asd))
-
 
     AllTaskData = JSON.parse(localStorage.getItem("allTaskData"));
     var currentUserAllTaskData = {}

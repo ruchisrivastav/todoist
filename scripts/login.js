@@ -116,7 +116,18 @@ function registerUser() {
                 }
                 accounts.push(newUser);
                 localStorage.setItem("accounts", JSON.stringify(accounts))
+                userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
+                allTaskData = JSON.parse(localStorage.getItem("allTaskData"));
+
+                if (allTaskData === null) {
+                    allTaskData = [];
+                    blankData = { username: userDetails.username, taskData: [] }
+                    allTaskData.push(blankData);
+                    localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
+                }
+
                 window.location.pathname = "/todoist"
+
             }
         }
     }
