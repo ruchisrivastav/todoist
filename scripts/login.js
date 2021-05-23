@@ -125,9 +125,7 @@ function registerUser() {
                     allTaskData.push(blankData);
                     localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
                 }
-
                 window.location.pathname = "/todoist"
-
             }
         }
     }
