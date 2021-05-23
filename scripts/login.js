@@ -62,7 +62,6 @@ function registerUser() {
     var username = document.getElementById("username").value
     var password = document.getElementById("password").value
     var confirmPassword = document.getElementById("confirm-password").value
-    console.log()
     var accounts = JSON.parse(localStorage.getItem("accounts"))
     var form = document.getElementById("login-form");
     if (accounts !== null && accounts !== undefined) {
@@ -91,7 +90,6 @@ function registerUser() {
             }
         }
         if (!flag) {
-            console.log(flag)
             if (password !== confirmPassword) {
                 form.innerHTML += `
                     <div id="alert" class='alert'>
@@ -112,7 +110,6 @@ function registerUser() {
                     `
 
             } else {
-                console.log("indise else")
                 var newUser = {
                     username: btoa(username),
                     password: btoa(password)

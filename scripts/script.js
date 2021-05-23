@@ -13,6 +13,15 @@ function logout() {
 
 window.onload = (function () {
     userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
+    allTaskData = JSON.parse(localStorage.getItem("allTaskData"));
+
+    if (allTaskData === null) {
+        allTaskData = [];
+        blankData = { username: userDetails.username, taskData: [] }
+        allTaskData.push(blankData);
+        localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
+    }
+
     container = document.getElementById("profile-container");
     container.innerHTML += `
     <span class="username-span">Welcome ${atob(userDetails.username)}!</span>
@@ -95,7 +104,6 @@ function showCalendar(month, year) {
                 cellText = document.createTextNode(date);
                 if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
                     cell.classList.add("today");
-                    console.log(selectedDate === new Date(year, month, date).toDateString())
                 } // color today's date
                 if (selectedDate === new Date(year, month, date).toDateString())
                     cell.classList.add("selected")
@@ -176,42 +184,68 @@ function getData(date) {
     taskData = currentUserAllTaskData.filter((item) => item.date === date)?.[0];
     return (taskData?.tasks)
 }
-function setData() {
-
-}
 function toggleBackdrop() {
     backdrop = document.getElementById("backdrop");
-    if (backdrop.classList.contains("open"))
-        backdrop.classList.toggle("open");
+    if (!backdrop.classList.contains("open"))
+        backdrop.classList.add("open");
+    else
+        backdrop.classList.remove("open");
+
 }
 
 function editTask(prevTaskName, newTask, prevDate, newDate) {
     newDate = new Date(newDate).toDateString();
-    console.log(prevTaskName, newTask, prevDate, newDate);
+    userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
+    allTaskData = JSON.parse(localStorage.getItem("allTaskData"));
 
-    if (prevTaskName === "") {
-        // create new task in the given date
-    } else if (prevTaskName !== newTask && prevDate !== newDate) {
-        // delete task and add new Task in new Date
-        console.log(prevTaskName === newTask && prevDate === newDate);
-    } else if (prevTaskName !== newTask && prevDate === newDate) {
-        // just edit task 
-    } else if (prevTaskName === newTask && prevDate !== newDate) {
-        // edit only date i.e delete from here, add to another Date
-    }
-    toggleBackdrop()
+    allTaskData.forEach((userData) => {
+        if (atob(userData.username) === atob(userCreds.username)) {
+            if (prevTaskName !== "") {
+                //     deleteTask(prevTaskName, prevDate);
+                //     userAllTaskData = userData.taskData
+                // currentTaskData = [];
+                userData.taskData.forEach(item => {
+                    if (item.date === prevDate) {
+                        item.tasks.splice(item.tasks.indexOf(prevTaskName), 1)
+                        toggleBackdrop();
+                        return;
+                    }
+                });
+            }
+            flag = false
+            userData.taskData.forEach(taskItem => {
+                if (taskItem.date === newDate) {
+                    taskItem.tasks.push(newTask);
+                    flag = true;
+                    toggleBackdrop();
+                    return;
+                }
+            })
+            if (!flag) {
+                nextTaskData = {
+                    date: newDate,
+                    tasks: [newTask]
+                }
+                toggleBackdrop();
+                userData.taskData.push(nextTaskData)
+                return;
+            }
+        }
+    })
+    localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
+
+    toggleBackdrop();
+    renderData();
 }
 
 function deleteTask(task, date) {
-    console.log(task, date);
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
     username = atob(userCreds.username);
     // localStorage.setItem("taskData", JSON.stringify(dat.data))
     AllTaskData = JSON.parse(localStorage.getItem("allTaskData"));
-    AllTaskData.forEach((userData, index) => {
+    AllTaskData.forEach((userData) => {
         if (atob(userData.username) === username) {
             // update here 
-            console.log(userData)
             userAllTaskData = userData.taskData
             currentTaskData = [];
             userAllTaskData.forEach(item => {
@@ -221,34 +255,16 @@ function deleteTask(task, date) {
             });
         }
     })
-    console.log(AllTaskData)
     localStorage.setItem("allTaskData", JSON.stringify(AllTaskData));
-
-    toggleBackdrop();
-    // for (let index = 0; index < AllTaskData.length; index++) {
-    //     if (atob(AllTaskData[index].username) === username) {
-    //         // update here 
-    //         userAllTaskData = AllTaskData[index].taskData
-    //         currentTaskData = [];
-    //         userAllTaskData.forEach(item => {
-    //             if (item.date === date) {
-    //                 item.tasks.splice(item.tasks.indexOf(task), 1)
-    //             }
-    //         });
-    //         // currentTaskData.tasks.splice(currentTaskData.tasks.indexOf(task), 1)
-    //         console.log(userAllTaskData)
-    //         break;
-    //     }
-    // }
+    if (backdrop.classList.contains("open"))
+        toggleBackdrop();
     renderData();
 }
 
 function renderEditTask(task = "", date = new Date().toDateString()) {
-    console.log(task, date)
     toggleBackdrop()
-    backdropContentContainer = document.getElementsByClassName("backdrop-content-container")[0];
+    backdropContentContainer = document.getElementById("backdrop-content-container");
     backdropContentContainer.innerHTML = `
-  
     <h3>${task === "" ? "Add New" : "Edit"} Task</h3>
     <div class="inputs-div">
         <textarea id="edit-task-textarea" rows="4" cols="50" required>${task}</textarea>
@@ -260,7 +276,7 @@ function renderEditTask(task = "", date = new Date().toDateString()) {
     <div class="btns-div">
         <button class="submit" onClick="editTask('${task}', document.getElementById('edit-task-textarea').value, '${date}', document.getElementById('edit-task-date').value)" >Submit</button>
         <button onclick="toggleBackdrop()">Cancel</button>
-        <button class="delete" onClick="deleteTask('${task}', '${date}')" ${task === "" ? "disabled" : ""}>Delete Task</button>
+        <button class="delete" onClick="event.stopPropagation(); deleteTask('${task}', '${date}')" ${task === "" ? "disabled" : ""}>Delete Task</button>
     </div>
     `
     document.getElementById("edit-task-textarea").focus();
@@ -339,7 +355,95 @@ function renderData() {
             `
             break;
         case "monthly":
-            contentContainer.innerHTML = `Monthly board`
+
+            let month = currentMonth;
+            let year = currentYear;
+            let firstDay = (new Date(year, month)).getDay();
+
+            tbl = []; // body of the calendar
+
+            // creating all cells
+            let date = 1;
+            for (let i = 0; i < 6; i++) {
+                // creates a table row
+                let row = document.createElement("tr");
+                row.setAttribute("id", `row-${i}`)
+
+                //creating individual cells, filing them up with data.
+                for (let j = 0; j < 7; j++) {
+                    thisDate = new Date(year, month, date).toDateString()
+                    if (i === 0 && j < firstDay) {
+                        cell = document.createElement("td");
+                        // cellBody = document.createTextNode("");
+                        cell.classList.add("monthly-date-cell")
+                        // cell.appendChild(cellBody);
+                        row.appendChild(cell);
+                    }
+                    else if (date > daysInMonth(month, year)) {
+                        break;
+                    }
+                    else {
+                        cell = document.createElement("td");
+                        cellBody = document.createElement("div");
+                        cellBody.classList.add("monthly-date-root")
+
+                        cellBodyDate = document.createElement("span")
+                        cellBodyDate.classList.add("monthly-date")
+
+                        cellBodyData = document.createElement("div");
+                        cellBodyData.classList.add("task-list")
+
+                        if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                            cellBodyDate.classList.add("today");
+                        }
+                        cellBodyDate.appendChild(document.createTextNode(date))
+                        cellBody.appendChild(cellBodyDate);
+
+                        // make task list
+                        taskData = getData(thisDate)
+                        taskData !== undefined && taskData.forEach((task) => {
+                            let day = document.createElement("div");
+                            day.classList.add("task-div");
+                            day.classList.add("monthly");
+                            taskSpan = document.createElement("span")
+                            taskSpan.classList.add("task-span");
+                            taskSpan.classList.add("monthly");
+                            taskSpan.appendChild(document.createTextNode(task))
+                            day.appendChild(taskSpan);
+                            day.setAttribute("onclick", `renderEditTask('${task}', '${thisDate}')`)
+                            cellBodyData.appendChild(day);
+                        })
+                        cell.classList.add("monthly-date-cell");
+                        cell.setAttribute("id", date)
+
+
+                        cellBody.appendChild(cellBodyData);
+
+                        cell.appendChild(cellBody);
+                        row.appendChild(cell);
+                        date++;
+                    }
+                }
+                tbl.push(row.outerHTML); // appending each row into calendar body.
+            }
+            contentContainer.innerHTML = `
+            <table class="monthly-task-table">
+                <thead class="monthly-task-head">
+                    <tr>
+                        <th class="days">Sun</th>
+                        <th class="days">Mon</th>
+                        <th class="days">Tue</th>
+                        <th class="days">Wed</th>
+                        <th class="days">Thu</th>
+                        <th class="days">Fri</th>
+                        <th class="days">Sat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                ${tbl.join("")}
+                </tbody>
+            </table>
+            `
             break;
         default:
             break;
