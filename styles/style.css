@@ -132,7 +132,6 @@ body {
 }
 .main-content {
     transition: all 0.3s ease-in-out;
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -144,8 +143,9 @@ body {
 }
 #display-content {
     width: -webkit-fill-available;
-    height: 100%;
+    height: calc(100% - 20px);
     padding: 10px;
+    font-family: "Architects Daughter", cursive;
     /* margin-left: 10px; */
 }
 #display-content > h3 {
@@ -173,6 +173,9 @@ body {
 #display-content .task-content.daily > .task-div.daily > .task-span.daily {
     font-family: "Architects Daughter", cursive;
     font-size: 18px;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #display-content .task-content.daily > .task-div.daily > .task-delete {
     width: 20px;
@@ -203,7 +206,9 @@ body {
     justify-content: flex-start;
     border-left: 1px solid #00000020;
     border-right: 1px solid #00000020;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-width: calc(100% / 7);
 }
 #display-content .task-content.weekly > .week-div > .week-date-span {
     margin: 15px 5px 5px;
@@ -217,6 +222,8 @@ body {
     padding: 5px;
     border-bottom: 1px solid #00000020;
     margin: 0px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #display-content .task-content.weekly > .week-div > .task-div.weekly:hover {
     box-shadow: 2px 2px 4px #00000070;
@@ -226,6 +233,9 @@ body {
 #display-content .task-content.weekly > .week-div > .task-div.weekly > .task-span.weekly {
     font-family: "Architects Daughter", cursive;
     font-size: 16px;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #display-content .monthly-task-table {
     width: 100%;
@@ -277,6 +287,8 @@ body {
 #display-content .monthly-task-table .task-list .task-div.monthly {
     border-radius: 5px;
     padding: 3px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #display-content .monthly-task-table .task-list .task-div.monthly:hover {
     box-shadow: 2px 2px 3px #00000070;

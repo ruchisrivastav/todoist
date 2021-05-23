@@ -205,15 +205,15 @@ function editTask(prevTaskName, newTask, prevDate, newDate) {
                     date: newDate,
                     tasks: [newTask]
                 }
-                toggleBackdrop();
                 userData.taskData.push(nextTaskData)
+                toggleBackdrop();
                 return;
             }
         }
     })
     localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
-
-    toggleBackdrop();
+    if (backdrop.classList.contains("open"))
+        toggleBackdrop();
     renderData();
 }
 
