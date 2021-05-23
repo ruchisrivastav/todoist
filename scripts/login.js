@@ -1,3 +1,8 @@
+window.onload = (function () {
+    accounts = localStorage.getItem("accounts")
+    if (accounts === null || accounts === undefined)
+        localStorage.setItem("accounts", JSON.stringify([]))
+})
 function login(username, password) {
     var form = document.getElementById("login-form");
     var credentials = JSON.parse(localStorage.getItem("accounts"))
@@ -48,6 +53,14 @@ function login(username, password) {
                 password: btoa(password)
             };
             sessionStorage.setItem("userDetails", JSON.stringify(userDetails));
+            allTaskData = JSON.parse(localStorage.getItem("allTaskData"));
+
+            if (allTaskData === null) {
+                allTaskData = [];
+                blankData = { username: userDetails.username, taskData: [] }
+                allTaskData.push(blankData);
+                localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
+            }
             form.action = "home.html";
         }
     }
@@ -57,7 +70,6 @@ function registerUser() {
     var username = document.getElementById("username").value
     var password = document.getElementById("password").value
     var confirmPassword = document.getElementById("confirm-password").value
-
     var accounts = JSON.parse(localStorage.getItem("accounts"))
     var form = document.getElementById("login-form");
     if (accounts !== null && accounts !== undefined) {
@@ -86,7 +98,6 @@ function registerUser() {
             }
         }
         if (!flag) {
-            console.log(flag)
             if (password !== confirmPassword) {
                 form.innerHTML += `
                     <div id="alert" class='alert'>
@@ -105,6 +116,7 @@ function registerUser() {
                         </button>
                     </div>
                     `
+
             } else {
                 var newUser = {
                     username: btoa(username),
@@ -112,11 +124,10 @@ function registerUser() {
                 }
                 accounts.push(newUser);
                 localStorage.setItem("accounts", JSON.stringify(accounts))
-
+                window.location.pathname = "/todoist"
             }
         }
     }
-
 }
 
 function closeAlert() {

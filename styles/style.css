@@ -132,7 +132,6 @@ body {
 }
 .main-content {
     transition: all 0.3s ease-in-out;
-    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -144,9 +143,10 @@ body {
 }
 #display-content {
     width: -webkit-fill-available;
-    height: 100%;
+    height: calc(100% - 20px);
     padding: 10px;
-    margin-left: 10px;
+    font-family: "Architects Daughter", cursive;
+    /* margin-left: 10px; */
 }
 #display-content > h3 {
     font-family: "Architects Daughter", cursive;
@@ -161,6 +161,10 @@ body {
     justify-content: space-between;
     align-items: center;
 }
+#display-content .task-content.daily {
+    overflow: auto;
+    height: calc(100% - 80px);
+}
 #display-content .task-content.daily > .task-div.daily:hover {
     box-shadow: 4px 4px 4px #00000070;
     background-color: white;
@@ -169,6 +173,9 @@ body {
 #display-content .task-content.daily > .task-div.daily > .task-span.daily {
     font-family: "Architects Daughter", cursive;
     font-size: 18px;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #display-content .task-content.daily > .task-div.daily > .task-delete {
     width: 20px;
@@ -192,13 +199,16 @@ body {
     font-family: "Architects Daughter", cursive;
 }
 #display-content .task-content.weekly > .week-div {
-    height: 100%;
+    height: calc(100% - 20px);
     display: flex;
     flex-grow: 1;
     flex-direction: column;
     justify-content: flex-start;
     border-left: 1px solid #00000020;
     border-right: 1px solid #00000020;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-width: calc(100% / 7);
 }
 #display-content .task-content.weekly > .week-div > .week-date-span {
     margin: 15px 5px 5px;
@@ -212,6 +222,8 @@ body {
     padding: 5px;
     border-bottom: 1px solid #00000020;
     margin: 0px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 #display-content .task-content.weekly > .week-div > .task-div.weekly:hover {
     box-shadow: 2px 2px 4px #00000070;
@@ -221,8 +233,67 @@ body {
 #display-content .task-content.weekly > .week-div > .task-div.weekly > .task-span.weekly {
     font-family: "Architects Daughter", cursive;
     font-size: 16px;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-
+#display-content .monthly-task-table {
+    width: 100%;
+    height: 100%;
+    table-layout: fixed;
+}
+#display-content .monthly-task-table > tbody > tr {
+    height: calc(100% / 6);
+    overflow: hidden;
+    display: table-row;
+}
+#display-content .monthly-task-head {
+    border-bottom: 1px solid grey;
+}
+#display-content .monthly-task-head .days {
+    border-bottom: 1px solid grey;
+}
+#display-content .monthly-task-table .monthly-date-root {
+    height: 130px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+#display-content .monthly-task-table .monthly-date-cell {
+    border: 1px solid;
+    border-image: linear-gradient(#f2f2f2, grey, #f2f2f2);
+    border-image-slice: 1;
+    padding: 5px;
+}
+#display-content .monthly-task-table .monthly-date {
+    width: calc(100% - 6px);
+    padding: 3px;
+    background-color: #d2d2d2;
+}
+#display-content .monthly-task-table .monthly-date.today {
+    background-color: #2875f7;
+    color: white;
+}
+#display-content .monthly-task-table .task-list {
+    padding-top: 3px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    height: 100%;
+    width: 100%;
+}
+#display-content .monthly-task-table .task-list .task-div.monthly {
+    border-radius: 5px;
+    padding: 3px 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#display-content .monthly-task-table .task-list .task-div.monthly:hover {
+    box-shadow: 2px 2px 3px #00000070;
+    cursor: pointer;
+}
 .backdrop {
     position: absolute;
     top: 50%;
@@ -319,6 +390,7 @@ body {
     border-bottom: 2px solid #2875f7;
     border-radius: 5px;
     font-family: "Architects Daughter", cursive;
+    font-size: 16px;
 }
 .table-container {
     width: fit-content;
