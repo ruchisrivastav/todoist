@@ -12,6 +12,7 @@ function logout() {
 }
 
 window.onload = (function () {
+    userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
     container = document.getElementById("profile-container");
     container.innerHTML += `
     <span class="username-span">Welcome ${atob(userDetails.username)}!</span>
