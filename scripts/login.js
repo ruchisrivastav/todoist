@@ -116,7 +116,7 @@ function registerUser() {
                 }
                 accounts.push(newUser);
                 localStorage.setItem("accounts", JSON.stringify(accounts))
-                window.location.pathname = "/"
+                window.location.pathname = "/todoist"
             }
         }
     }
