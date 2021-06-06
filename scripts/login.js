@@ -71,7 +71,7 @@ function registerUser() {
             .then(data => {
                 console.log(data)
                 if (data.status === 201) {
-                    window.location.pathname = "/todoist"
+                    window.location.pathname = "/todoist-FE"
                 } else {
                     form.innerHTML += `
                     <div id="alert" class='alert'>
