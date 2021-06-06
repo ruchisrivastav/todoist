@@ -1,3 +1,6 @@
+const BASE_URL = "https://todoist-be.herokuapp.com/"
+// const BASE_URL = "http://localhost:5000/"
+
 function toggleSidenav() {
     sidenavDiv = document.getElementsByClassName("sidenav")[0];
     mainContent = document.getElementsByClassName("main-content")[0];
@@ -15,7 +18,7 @@ window.onload = (function () {
     userDetails = JSON.parse(sessionStorage.getItem("userDetails"));
     container = document.getElementById("profile-container");
     container.innerHTML += `
-    <span class="username-span">Welcome ${atob(userDetails.username)}!</span>
+    <span class="username-span">Welcome ${userDetails.username}!</span>
     <span class="logout-span" onclick="logout()">Logout</span>
     `
 })
@@ -149,19 +152,25 @@ function getWeekNumber(date) {
     var weekOfMonth = Math.abs(Math.ceil((date - 1 - day) / 7));
     return weekOfMonth;
 }
-function getData(date) {
+async function getData(date) {
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
 
-    AllTaskData = JSON.parse(localStorage.getItem("allTaskData"));
-    var currentUserAllTaskData = {}
-    for (let i = 0; i < AllTaskData.length; i++) {
-        if (atob(AllTaskData[i].username) === atob(userCreds.username)) {
-            currentUserAllTaskData = AllTaskData[i].taskData;
-            break;
-        }
-    }
-    taskData = currentUserAllTaskData.filter((item) => item.date === date)?.[0];
-    return (taskData?.tasks)
+    let AllTaskData = [];
+    res = await fetch(BASE_URL + "getData?username=" + userCreds.username, {
+        method: "GET",
+        headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" }
+    }).then(response => response.json())
+        .then(data => {
+            if (data.status === 200) {
+                AllTaskData = data.data
+                taskData = AllTaskData.taskData.filter((item) => item.date === date)?.[0];
+                return (taskData?.tasks)
+            } else if (data.status === 204) {
+                AllTaskData = []
+                return AllTaskData;
+            }
+        })
+    return res;
 }
 function toggleBackdrop() {
     backdrop = document.getElementById("backdrop");
@@ -172,72 +181,55 @@ function toggleBackdrop() {
 
 }
 
-function editTask(prevTaskName, newTask, prevDate, newDate) {
+async function editTask(prevTaskName, newTask, prevDate, newDate) {
     newDate = new Date(newDate).toDateString();
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
     allTaskData = JSON.parse(localStorage.getItem("allTaskData"));
-
-    allTaskData.forEach((userData) => {
-        if (atob(userData.username) === atob(userCreds.username)) {
-            if (prevTaskName !== "") {
-                //     deleteTask(prevTaskName, prevDate);
-                //     userAllTaskData = userData.taskData
-                // currentTaskData = [];
-                userData.taskData.forEach(item => {
-                    if (item.date === prevDate) {
-                        item.tasks.splice(item.tasks.indexOf(prevTaskName), 1)
-                        toggleBackdrop();
-                        return;
-                    }
-                });
-            }
-            flag = false
-            userData.taskData.forEach(taskItem => {
-                if (taskItem.date === newDate) {
-                    taskItem.tasks.push(newTask);
-                    flag = true;
-                    toggleBackdrop();
-                    return;
-                }
-            })
-            if (!flag) {
-                nextTaskData = {
-                    date: newDate,
-                    tasks: [newTask]
-                }
-                userData.taskData.push(nextTaskData)
-                toggleBackdrop();
-                return;
-            }
-        }
+    putData = JSON.stringify({
+        username: userCreds.username,
+        currentTask: prevTaskName,
+        currentDate: prevDate,
+        newTask: newTask,
+        newDate: newDate
     })
-    localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
-    if (backdrop.classList.contains("open"))
-        toggleBackdrop();
-    renderData();
+
+    await fetch(BASE_URL + "editTask", {
+        method: "PUT",
+        headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+        body: putData
+    }).then(resp => resp.json()).then(response => {
+        if (response.status === 200) {
+            if (backdrop.classList.contains("open"))
+                toggleBackdrop();
+            renderData();
+        }
+    }).catch(err => {
+        console.error(err)
+    })
 }
 
-function deleteTask(task, date) {
+async function deleteTask(task, date) {
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
-    username = atob(userCreds.username);
-    // localStorage.setItem("taskData", JSON.stringify(dat.data))
-    AllTaskData = JSON.parse(localStorage.getItem("allTaskData"));
-    AllTaskData.forEach((userData) => {
-        if (atob(userData.username) === username) {
-            // update here 
-            userAllTaskData = userData.taskData
-            currentTaskData = [];
-            userAllTaskData.forEach(item => {
-                if (item.date === date) {
-                    item.tasks.splice(item.tasks.indexOf(task), 1)
-                }
-            });
-        }
+    putData = JSON.stringify({
+        username: userCreds.username,
+        date: date,
+        task: task
     })
-    localStorage.setItem("allTaskData", JSON.stringify(AllTaskData));
-    if (backdrop.classList.contains("open"))
-        toggleBackdrop();
-    renderData();
+
+    await fetch(BASE_URL + "deleteTask", {
+        method: "PUT",
+        headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+        body: putData
+    }).then(resp => resp.json()).then(response => {
+        console.log(response)
+        if (response.status === 200) {
+            if (backdrop.classList.contains("open"))
+                toggleBackdrop();
+            renderData();
+        }
+    }).catch(err => {
+        console.error(err)
+    })
 }
 
 function renderEditTask(task = "", date = new Date().toDateString()) {
@@ -261,26 +253,29 @@ function renderEditTask(task = "", date = new Date().toDateString()) {
     document.getElementById("edit-task-textarea").focus();
 
 }
-function renderData() {
+async function renderData() {
+    loader = document.getElementById("loader");
     contentContainer = document.getElementById("display-content");
     switch (view) {
         case "daily":
-            taskData = getData(selectedDate);
+            loader.style.display = "flex"
+            taskData = await getData(selectedDate);
+            loader.style.display = "none"
             taskList = []
             taskData?.forEach(task => {
                 taskDiv = `
                 <div class="task-div daily" onclick="event.stopPropagation(); renderEditTask('${task}', '${selectedDate}')" >
-                    <span class="task-span daily">${task}</span>
-                    <span onclick="event.stopPropagation(); deleteTask('${task}', '${selectedDate}')" class="task-delete">
-                        <img src="assets/icons/trash-solid.svg" />
-                    </span>
+                <span class="task-span daily">${task}</span>
+                <span onclick="event.stopPropagation(); deleteTask('${task}', '${selectedDate}')" class="task-delete">
+                <img src="assets/icons/trash-solid.svg" />
+                </span>
                 </div>`
                 taskList.push(taskDiv);
             });
             contentContainer.innerHTML = `
             <h3>${selectedDate}</h3>
             <div class="task-content daily">
-                ${taskList.join("")}
+            ${taskList.join("")}
             </div>
             `
             break;
@@ -292,20 +287,22 @@ function renderData() {
             currentSelectedDate = new Date(selectedDate);
             // counter for date from another month
             newDateCount = 1;
+            loader.style.display = "flex"
             for (index = 0; index < 7; index++) {
                 if (week.children[index] !== undefined) {
                     weekDate = new Date(currentSelectedDate.getFullYear(), currentSelectedDate.getMonth(), Number(week.children[index]?.innerText));
                     dates.push(weekDate.toDateString());
-                    tasks = getData(weekDate.toDateString());
+                    tasks = await getData(weekDate.toDateString());
                     datesTaskData.push(tasks);
                 } else {
                     weekDate = new Date(currentSelectedDate.getFullYear(), currentSelectedDate.getMonth() + 1, newDateCount);
                     dates.push(weekDate.toDateString());
-                    tasks = getData(weekDate.toDateString());
+                    tasks = await getData(weekDate.toDateString());
                     datesTaskData.push(tasks);
                     newDateCount++;
                 }
             }
+            loader.style.display = "none"
             var weekDivList = []
             dates.forEach((date, index) => {
                 var week = '';
@@ -343,6 +340,7 @@ function renderData() {
 
             // creating all cells
             let date = 1;
+            loader.style.display = "flex"
             for (let i = 0; i < 6; i++) {
                 // creates a table row
                 let row = document.createElement("tr");
@@ -379,7 +377,7 @@ function renderData() {
                         cellBody.appendChild(cellBodyDate);
 
                         // make task list
-                        taskData = getData(thisDate)
+                        taskData = await getData(thisDate)
                         taskData !== undefined && taskData.forEach((task) => {
                             let day = document.createElement("div");
                             day.classList.add("task-div");
@@ -405,6 +403,7 @@ function renderData() {
                 }
                 tbl.push(row.outerHTML); // appending each row into calendar body.
             }
+            loader.style.display = "none"
             contentContainer.innerHTML = `
             <table class="monthly-task-table">
                 <thead class="monthly-task-head">

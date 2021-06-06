@@ -1,34 +1,16 @@
-window.onload = (function () {
-    accounts = localStorage.getItem("accounts")
-    if (accounts === null || accounts === undefined)
-        localStorage.setItem("accounts", JSON.stringify([]))
-})
+const BASE_URL = "https://todoist-be.herokuapp.com/"
+// const BASE_URL = "http://localhost:5000/"
+
 function login(username, password) {
     var form = document.getElementById("login-form");
-    var credentials = JSON.parse(localStorage.getItem("accounts"))
-    if (credentials === null) {
-        form.innerHTML += `
-        <div id="alert" class='alert'>
-            <div>
-                <span>
-                    <i class="fa fa-exclamation-circle" ></i>
-                </span>
-                <span>
-                    Username not found! Please Register.
-                </span>
-            </div>
-            <button class="close-alert" onclick="closeAlert()">
-                <span>
-                    <i class="fa fa-times"></i>
-                </span>
-            </button>
-        </div>
-        `
-
-    } else {
-        var login = credentials.find(element => atob(element.username) === username && atob(element.password) === password);
-        if (login === undefined) {
-            if (!document.getElementById("alert")) {
+    fetch(BASE_URL + "login?username=" + username + "&password=" + password, { method: "GET", headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" } })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 200) {
+                username = { username: data.username }
+                sessionStorage.setItem("userDetails", JSON.stringify(username))
+                window.location.pathname = "/home.html";
+            } else if (data.status === 400) {
                 form.innerHTML += `
                 <div id="alert" class='alert'>
                     <div>
@@ -47,23 +29,9 @@ function login(username, password) {
                 </div>
                 `
             }
-        } else {
-            var userDetails = {
-                username: btoa(username),
-                password: btoa(password)
-            };
-            sessionStorage.setItem("userDetails", JSON.stringify(userDetails));
-            allTaskData = JSON.parse(localStorage.getItem("allTaskData"));
-
-            if (allTaskData === null) {
-                allTaskData = [];
-                blankData = { username: userDetails.username, taskData: [] }
-                allTaskData.push(blankData);
-                localStorage.setItem("allTaskData", JSON.stringify(allTaskData))
-            }
-            form.action = "home.html";
-        }
-    }
+        }).catch(err => {
+            console.error(err)
+        })
 }
 
 function registerUser() {
@@ -72,41 +40,47 @@ function registerUser() {
     var confirmPassword = document.getElementById("confirm-password").value
     var accounts = JSON.parse(localStorage.getItem("accounts"))
     var form = document.getElementById("login-form");
-    if (accounts !== null && accounts !== undefined) {
-        flag = false;
-        for (var i = 0; i < accounts.length; i++) {
-            if (atob(accounts[i].username) === username) {
-                form.innerHTML += `
-                <div id="alert" class='alert'>
-                    <div>
-                        <span>
-                            <i class="fa fa-exclamation-circle" ></i>
-                        </span>
-                        <span>
-                            Username already exists. Try something else.
-                        </span>
-                    </div>
-                    <button class="close-alert" onclick="closeAlert()">
-                        <span>
-                            <i class="fa fa-times"></i>
-                        </span>
-                    </button>
-                </div>
-                `
-                flag = true;
-                break;
-            }
+    if (password !== confirmPassword) {
+        form.innerHTML += `
+        <div id="alert" class='alert'>
+        <div>
+        <span>
+        <i class="fa fa-exclamation-circle" ></i>
+        </span>
+        <span>
+        Passwords do not match.
+        </span>
+        </div>
+        <button class="close-alert" onclick="closeAlert()">
+        <span>
+        <i class="fa fa-times"></i>
+        </span>
+        </button>
+        </div>
+        `
+    } else {
+        var responseBody = {
+            username: username,
+            password: password
         }
-        if (!flag) {
-            if (password !== confirmPassword) {
-                form.innerHTML += `
+        fetch(BASE_URL + "register", {
+            method: "POST",
+            headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+            body: JSON.stringify(responseBody)
+        }).then(response => response.json())
+            .then(data => {
+                console.log(data)
+                if (data.status === 201) {
+                    window.location.pathname = "/todoist"
+                } else {
+                    form.innerHTML += `
                     <div id="alert" class='alert'>
                         <div>
                             <span>
                                 <i class="fa fa-exclamation-circle" ></i>
                             </span>
                             <span>
-                                Passwords do not match.
+                                Username already exists. Try something else.
                             </span>
                         </div>
                         <button class="close-alert" onclick="closeAlert()">
@@ -116,17 +90,8 @@ function registerUser() {
                         </button>
                     </div>
                     `
-
-            } else {
-                var newUser = {
-                    username: btoa(username),
-                    password: btoa(password)
                 }
-                accounts.push(newUser);
-                localStorage.setItem("accounts", JSON.stringify(accounts))
-                window.location.pathname = "/todoist"
-            }
-        }
+            })
     }
 }
 
