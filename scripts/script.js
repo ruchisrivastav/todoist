@@ -11,7 +11,7 @@ function toggleSidenav() {
 
 function logout() {
     sessionStorage.clear();
-    window.location.pathname = "/todoist";
+    window.location.pathname = "/todoist-FE";
 }
 
 window.onload = (function () {
