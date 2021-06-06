@@ -9,7 +9,7 @@ function login(username, password) {
             if (data.status === 200) {
                 username = { username: data.username }
                 sessionStorage.setItem("userDetails", JSON.stringify(username))
-                window.location.pathname = "/home.html";
+                window.location.pathname = "/todoist-FE/home.html";
             } else if (data.status === 400) {
                 form.innerHTML += `
                 <div id="alert" class='alert'>
