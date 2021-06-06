@@ -3,12 +3,15 @@ const BASE_URL = "https://todoist-be.herokuapp.com/"
 
 function login(username, password) {
     var form = document.getElementById("login-form");
+    var loader = document.getElementById("loader")
+    loader.style.display = "flex"
     fetch(BASE_URL + "login?username=" + username + "&password=" + password, { method: "GET", headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" } })
         .then(response => response.json())
         .then(data => {
             if (data.status === 200) {
                 username = { username: data.username }
                 sessionStorage.setItem("userDetails", JSON.stringify(username))
+                loader.style.display = "none"
                 window.location.pathname = "/todoist-FE/home.html";
             } else if (data.status === 400) {
                 form.innerHTML += `
@@ -38,7 +41,8 @@ function registerUser() {
     var username = document.getElementById("username").value
     var password = document.getElementById("password").value
     var confirmPassword = document.getElementById("confirm-password").value
-    var accounts = JSON.parse(localStorage.getItem("accounts"))
+    var loader = document.getElementById("loader")
+
     var form = document.getElementById("login-form");
     if (password !== confirmPassword) {
         form.innerHTML += `
@@ -63,6 +67,7 @@ function registerUser() {
             username: username,
             password: password
         }
+        loader.style.display = "flex"
         fetch(BASE_URL + "register", {
             method: "POST",
             headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
@@ -71,6 +76,7 @@ function registerUser() {
             .then(data => {
                 console.log(data)
                 if (data.status === 201) {
+                    loader.style.display = "none"
                     window.location.pathname = "/todoist-FE"
                 } else {
                     form.innerHTML += `
