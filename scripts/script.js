@@ -167,18 +167,30 @@ async function getData(date) {
             AllTaskData = [];
             return AllTaskData;
         }
-        response.json();
+        else {
+            response.json().then(data => {
+                if (data.status === 200) {
+                    AllTaskData = data.data
+                    taskData = AllTaskData.taskData.filter((item) => item.date === date)?.[0];
+                    return (taskData?.tasks)
+                } else if (data.status === 204) {
+                    AllTaskData = []
+                    return AllTaskData;
+                }
+            });
+        }
     })
-        .then(data => {
-            if (data.status === 200) {
-                AllTaskData = data.data
-                taskData = AllTaskData.taskData.filter((item) => item.date === date)?.[0];
-                return (taskData?.tasks)
-            } else if (data.status === 204) {
-                AllTaskData = []
-                return AllTaskData;
-            }
-        })
+    // .then(data => {
+    //     console.log(data)
+    //     if (data.status === 200) {
+    //         AllTaskData = data.data
+    //         taskData = AllTaskData.taskData.filter((item) => item.date === date)?.[0];
+    //         return (taskData?.tasks)
+    //     } else if (data.status === 204) {
+    //         AllTaskData = []
+    //         return AllTaskData;
+    //     }
+    // })
     return res;
 }
 function toggleBackdrop() {
