@@ -42,6 +42,7 @@ function registerUser() {
     var password = document.getElementById("password").value
     var confirmPassword = document.getElementById("confirm-password").value
     var loader = document.getElementById("loader")
+    console.log(loader)
 
     var form = document.getElementById("login-form");
     if (password !== confirmPassword) {

@@ -158,8 +158,17 @@ async function getData(date) {
     let AllTaskData = [];
     res = await fetch(BASE_URL + "getData?username=" + userCreds.username, {
         method: "GET",
-        headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" }
-    }).then(response => response.json())
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json"
+        }
+    }).then(response => {
+        if (response.status === 204) {
+            AllTaskData = [];
+            return AllTaskData;
+        }
+        response.json();
+    })
         .then(data => {
             if (data.status === 200) {
                 AllTaskData = data.data
