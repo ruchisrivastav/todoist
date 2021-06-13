@@ -539,6 +539,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    z-index: 10;
 }
 #loading {
     border-radius: 50%;

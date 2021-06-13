@@ -1,5 +1,5 @@
-// const BASE_URL = "https://todoist-be.herokuapp.com/"
-const BASE_URL = "http://localhost:5000/"
+const BASE_URL = "https://todoist-be.herokuapp.com/"
+// const BASE_URL = "http://localhost:5000/"
 
 function toggleSidenav() {
     sidenavDiv = document.getElementsByClassName("sidenav")[0];
@@ -203,6 +203,8 @@ function toggleBackdrop() {
 }
 
 async function editTask(prevTaskName, newTask, prevDate, newDate) {
+    loader = document.getElementById("loader");
+    loader.style.display = "flex"
     newDate = new Date(newDate).toDateString();
     userCreds = JSON.parse(sessionStorage.getItem("userDetails"));
     allTaskData = JSON.parse(localStorage.getItem("allTaskData"));
@@ -222,6 +224,7 @@ async function editTask(prevTaskName, newTask, prevDate, newDate) {
         if (response.status === 200) {
             if (backdrop.classList.contains("open"))
                 toggleBackdrop();
+            loader.style.display = "none"
             renderData();
         }
     }).catch(err => {
